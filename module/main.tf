@@ -587,24 +587,6 @@ resource "azurerm_monitor_metric_alert" "alert" {
   }
 }
 
-#resource "azurerm_managed_disk" "managed_disk" {
-#  name                 = "${var.vm_prefix}-${(count.index / length(var.managed_disk_sizes)) + 1}-disk-${(count.index % length(var.managed_disk_sizes)) + 1}"
-#  location             = "${var.region}"
-#  resource_group_name  = "${var.vm_resource_group_name}"
-#  storage_account_type = "${var.managed_disk_type}"
-#  create_option        = "Empty"
-#  disk_size_gb         = "${var.managed_disk_sizes[count.index % length(var.managed_disk_sizes)]}"
-#
-#}
-#
-#resource "azurerm_virtual_machine_data_disk_attachment" "managed_disk" {
-#  count              = "${var.managed_disk_sizes[0] != "" ? (var.rdsh_count * length(var.managed_disk_sizes)) : 0 }"
-#  managed_disk_id    = "${azurerm_managed_disk.managed_disk.*.id[count.index]}"
-#  virtual_machine_id = "${azurerm_virtual_machine.main.*.id[count.index / length(var.managed_disk_sizes)]}"
-#  lun                = "10"
-#  caching            = "ReadWrite"
-#}
-
 resource "azurerm_virtual_machine_extension" "deploy_3cx" {
   name                 = "hostname"
   virtual_machine_id   =  azurerm_virtual_machine.pbx.id
@@ -614,7 +596,7 @@ resource "azurerm_virtual_machine_extension" "deploy_3cx" {
 
   settings = <<SETTINGS
     {
-        "fileUris": ["${join("\",\"", ["https://raw.githubusercontent.com/svetek/terraform-scripts/main/Modules/PBX-3CX/scripts/deploy.sh"])}"],
+        "fileUris": ["${join("\",\"", ["https://raw.githubusercontent.com/svetek/terraform-3CX-Azure/main/module/scripts/deploy.sh"])}"],
         "commandToExecute": "sudo ./deploy.sh -p '${random_password.pbx-superset-password.result}'"
     }
 SETTINGS
