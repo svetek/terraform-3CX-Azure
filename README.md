@@ -3,15 +3,15 @@
 ## How to use 
 ### Terraforms files
 
-Before start on your system will be installed terraform and azure-cli
-Create directory with name organization and inside new directory create 3 files. 
+Before start on your system will be installed terraform and azure-cli.  
+Create directory with name organization and inside new directory create 3 files.  
 
-terraform.tfvars
+terraform.tfvars  
 
     tenant_id = "<Azure tenant ID>"
     subscription_id = "<Azure subscription ID>"
 
-terraform.tf
+terraform.tf  
 
     terraform {
         required_providers {
@@ -25,7 +25,7 @@ terraform.tf
     variable "tenant_id" {}
     variable "subscription_id" {}
 
-pbx-3cx.tf
+pbx-3cx.tf  
 
     module "CX" {
         source          = "git::github.com/svetek/terraform-3CX-Azure.git/module"
