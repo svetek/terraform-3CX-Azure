@@ -1,7 +1,7 @@
 # Azure tenant ID
 # az account show --subscription <client tenant id>
-tenant_id = "702dc21a-89b2-4594-bc1f-401a518bf3af"
-subscription_id = "1a06ca66-a14f-4109-a991-437989a7be98"
+tenant_id = ""
+subscription_id = ""
 
 # VMS
 vm_resource_group_name = "RG-US-3CX-test"
@@ -11,7 +11,7 @@ vm_name = "3CX"
 vm_size = "Standard_DS1_v2"
 enable_accelerated_networking = true
 vm_storage_os_disk_size = 30
-local_admin_username = "maxi"
+local_admin_username = "admin3cx"
 vm_timezone = ""
 
 # az vm image list -l westus -p 3cx --all
