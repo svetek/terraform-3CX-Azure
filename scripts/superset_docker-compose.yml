@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  superset:
+    image: apache/superset:latest
+    container_name: superset_app
+    #    command: ["/app/docker/docker-bootstrap.sh", "app"]
+    restart: always
+    ports:
+      - 8088:8088
+#    user: *superset-user
+#    depends_on: *superset-depends-on
+#    volumes: *superset-volumes
+#    environment:
+#      CYPRESS_CONFIG: "${CYPRESS_CONFIG}"
+volumes:
+  superset_home:
+    external: false
+  db_home:
+    external: false
