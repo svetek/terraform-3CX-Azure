@@ -6,6 +6,9 @@
 Before start on your system will be installed terraform and azure-cli.  
 Create directory with name organization and inside new directory create 3 files.  
 
+https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
+https://www.terraform.io/downloads
+
 terraform.tfvars  
 
     tenant_id = "<Azure tenant ID>"
@@ -54,8 +57,8 @@ pbx-3cx.tf
         managed_disk_type  = "Standard_LRS"
         # 192.168.1.1/32,127.0.0.1/32
         firewall_allow_ips = "192.168.1.1/32"
-        firewall_allow_bandwidth_ip_1 = "216.82.238.134"
-        firewall_allow_bandwidth_ip_2 = "67.231.2.12"
+        firewall_allow_bandwidth_ip_1 = "216.82.***.***"
+        firewall_allow_bandwidth_ip_2 = "67.231.***.**"
         vault_ad_sec_group = "DUO"
     }
     
