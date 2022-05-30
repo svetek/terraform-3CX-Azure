@@ -23,7 +23,7 @@ resource "azurerm_storage_account" "storage" {
   resource_group_name      = azurerm_resource_group.RG-3CX-GROUP.name
   location                 = azurerm_resource_group.RG-3CX-GROUP.location
   account_tier             = "Standard"
-  account_replication_type = "LRS"
+  account_replication_type = "ZRS"
   account_kind             = "StorageV2"
   nfsv3_enabled             = "true"
   is_hns_enabled            = "true"
@@ -46,9 +46,9 @@ resource "azurerm_storage_account" "storage" {
     environment = "PROD"
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+#  lifecycle {
+#    prevent_destroy = true
+#  }
 
 }
 

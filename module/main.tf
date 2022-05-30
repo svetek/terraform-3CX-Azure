@@ -29,7 +29,7 @@ resource "random_string" "random_prefix_vault_name" {
 }
 
 resource "azurerm_key_vault" "pbx_vault" {
-  name                       = "pbx-vault-${random_string.random_prefix_vault_name.result}"
+  name                       = "v-${lower(var.vm_name)}-${random_string.random_prefix_vault_name.result}"
   location                   = azurerm_resource_group.RG-3CX-GROUP.location
   resource_group_name        = azurerm_resource_group.RG-3CX-GROUP.name
   tenant_id                  = data.azurerm_client_config.current.tenant_id
