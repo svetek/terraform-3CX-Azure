@@ -2,7 +2,6 @@ variable "tenant_id" {}
 variable "subscription_id" {}
 
 variable "vm_resource_group_name" {}
-
 variable "region" {
   description = "Region to deploy"
 }

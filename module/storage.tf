@@ -115,7 +115,7 @@ resource "null_resource" "mount_storage" {
     type     = "ssh"
     user     = var.local_admin_username
     private_key = tls_private_key.rsa_vm_ssh.private_key_pem
-    host     = azurerm_public_ip.pbx-public-ip.ip_address
+    host     = data.azurerm_public_ip.pbx-public-ip.ip_address
   }
 
   provisioner "remote-exec" {

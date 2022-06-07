@@ -453,10 +453,13 @@ resource "azurerm_public_ip" "pbx-public-ip" {
 #  domain_name_label = "cx1"
 }
 
-output "pbx_public_ip" {
-  value = "${azurerm_public_ip.pbx-public-ip.ip_address}"
+data "azurerm_public_ip" "pbx-public-ip" {
+  name = "${var.vm_name}-public-Ip"
+  resource_group_name = azurerm_resource_group.RG-3CX-GROUP.name
 
+  depends_on = [ azurerm_virtual_machine_extension.deploy_3cx ]
 }
+
 
 resource "azurerm_network_interface" "pbx-network-interface" {
   name                      = "${var.vm_name}-nic"
@@ -607,6 +610,9 @@ output "pbx_installation_ip" {
   value = "http://${azurerm_public_ip.pbx-public-ip.ip_address}:5015"
 }
 
+output "pbx_public_ip" {
+  value = "${azurerm_public_ip.pbx-public-ip.ip_address}"
+}
 
 #output "pbx_installation_url" {
 #  value = "http://${azurerm_public_ip.pbx-public-ip.fqdn}:5015"
