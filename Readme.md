@@ -30,6 +30,11 @@ terraform.tf
 
 pbx-3cx.tf
 
+    locals {
+        resource_name_prefix = "PROS"
+        envoriment = "PROD"
+    }
+    
     module "PBX" {
         source          = "git::github.com/svetek/terraform-3CX-Azure.git/module"
 
