@@ -20,8 +20,7 @@ variable "managed_disk_type" {}
 variable "vm_timezone" {}
 variable "local_admin_username" {}
 variable "vault_ad_sec_group" {}
-variable "firewall_allow_ips" {}
-variable "firewall_allow_bandwidth_ip_1" {}
-variable "firewall_allow_bandwidth_ip_2" {}
+variable "firewall_allow_voipproviders" {}
+variable "firewall_allow_clientip" {}
 
 

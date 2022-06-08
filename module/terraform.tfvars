@@ -29,7 +29,6 @@ vm_version = "latest"
 
 managed_disk_sizes = [""]
 managed_disk_type = "Standard_LRS"
-firewall_allow_ips = "127.0.0.1"
-firewall_allow_bandwidth_ip_1 = "127.0.0.1"
-firewall_allow_bandwidth_ip_2 = "127.0.0.1"
+firewall_allow_voipproviders = ["127.0.0.1"]
+firewall_allow_clientip = ["127.0.0.1"]
 vault_ad_sec_group="Administrators"
