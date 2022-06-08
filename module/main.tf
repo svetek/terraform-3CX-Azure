@@ -46,9 +46,6 @@ resource "azurerm_key_vault" "pbx_vault" {
     environment = "PROD"
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "azurerm_key_vault_access_policy" "pbx_vault_sp_access" {
@@ -117,6 +114,7 @@ resource "azurerm_key_vault_secret" "save_password_vault" {
 
   lifecycle {
     prevent_destroy = true
+    ignore_changes = [ value ]
   }
 }
 
@@ -154,8 +152,13 @@ resource "azurerm_key_vault_secret" "rsa_vm_ssh_private" {
 
   lifecycle {
     prevent_destroy = true
+    ignore_changes = [ value ]
   }
 
+}
+
+output "vm_private_key" {
+  value = tls_private_key.rsa_vm_ssh.private_key_pem
 }
 
 resource "azurerm_key_vault_secret" "rsa_vm_ssh_public" {
@@ -168,7 +171,9 @@ resource "azurerm_key_vault_secret" "rsa_vm_ssh_public" {
 
   lifecycle {
     prevent_destroy = true
+    ignore_changes = [ value ]
   }
+
 
 }
 
@@ -185,7 +190,9 @@ resource "azurerm_key_vault_secret" "save_password_web_vault" {
 
   lifecycle {
     prevent_destroy = true
+    ignore_changes = [ value ]
   }
+
 }
 
 resource "azurerm_key_vault_secret" "save_password_superset_vault" {
@@ -197,6 +204,7 @@ resource "azurerm_key_vault_secret" "save_password_superset_vault" {
 
   lifecycle {
     prevent_destroy = true
+    ignore_changes = [ value ]
   }
 }
 
@@ -536,9 +544,9 @@ resource "azurerm_virtual_machine" "pbx" {
     Name = "3CX VM MODULE"
     environment = "PROD"
   }
-  lifecycle {
-    prevent_destroy = true
-  }
+//  lifecycle {
+//    prevent_destroy = true
+//  }
 }
 
 #data "azurerm_subscription" "primary" {

@@ -96,18 +96,30 @@ resource "azurerm_storage_container" "nfsv3_callrecords" {
 }
 
 locals {
-  backups_mount     = "${split("/", split("//", azurerm_storage_container.nfsv3_backup.id)[1])[0]}:/${azurerm_storage_account.storage.name}/${azurerm_storage_container.nfsv3_backup.name} /var/lib/3cxpbx/Instance1/Data/Backups auto sec=sys,vers=3,nolock,proto=tcp 0 0"
-  callrecords_mount = "${split("/", split("//", azurerm_storage_container.nfsv3_callrecords.id)[1])[0]}:/${azurerm_storage_account.storage.name}/${azurerm_storage_container.nfsv3_callrecords.name} /var/lib/3cxpbx/Instance1/Data/Recordings auto sec=sys,vers=3,nolock,proto=tcp 0 0"
+  backups_fstab     = "${split("/", split("//", azurerm_storage_container.nfsv3_backup.id)[1])[0]}:/${azurerm_storage_account.storage.name}/${azurerm_storage_container.nfsv3_backup.name} /var/lib/3cxpbx/Instance1/Data/Backups auto sec=sys,vers=3,nolock,proto=tcp 0 0"
+  callrecords_fstab = "${split("/", split("//", azurerm_storage_container.nfsv3_callrecords.id)[1])[0]}:/${azurerm_storage_account.storage.name}/${azurerm_storage_container.nfsv3_callrecords.name} /var/lib/3cxpbx/Instance1/Data/Recordings auto sec=sys,vers=3,nolock,proto=tcp 0 0"
+  backups_mount     = "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_backup.id)[1])[0]}:/${azurerm_storage_account.storage.name}/${azurerm_storage_container.nfsv3_backup.name} /var/lib/3cxpbx/Instance1/Data/Backups"
+  callrecords_mount = "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_callrecords.id)[1])[0]}:/${azurerm_storage_account.storage.name}/${azurerm_storage_container.nfsv3_callrecords.name} /var/lib/3cxpbx/Instance1/Data/Recordings"
+
+
 }
 
 
-#output "backups_mount" {
-#  value = backups_
-#}
-#
-#output "callrecords_mount" {
-#  value = "${split("/", split("//", azurerm_storage_container.nfsv3_callrecords.id)[1])[0]}:/${azurerm_storage_account.storage.name}/${azurerm_storage_container.nfsv3_callrecords.name} /var/lib/3cxpbx/Instance1/Data/Recordings auto sec=sys,vers=3,nolock,proto=tcp 0 0"
-#}
+output "backups_fstab" {
+  value = local.backups_fstab
+}
+
+output "callrecords_fstab" {
+  value = local.callrecords_fstab
+}
+
+output "backups_mount" {
+  value = local.backups_mount
+}
+
+output "callrecords_mount" {
+  value = local.callrecords_mount
+}
 
 resource "null_resource" "mount_storage" {
 
@@ -120,10 +132,15 @@ resource "null_resource" "mount_storage" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo sh -c \"echo '${local.backups_mount}' >> /etc/fstab\"",
-      "sudo sh -c \"echo '${local.callrecords_mount}' >> /etc/fstab\"",
-      "sudo mount /var/lib/3cxpbx/Instance1/Data/Backups",
-      "sudo mount /var/lib/3cxpbx/Instance1/Data/Recordings",
+
+      "sudo sh -c \"echo \\\"@reboot root /bin/bash -c 'sleep 10 && ${local.backups_mount} '\\\" >> /etc/crontab \"",
+      "sudo sh -c \"echo \\\"@reboot root /bin/bash -c 'sleep 10 && ${local.callrecords_mount} '\\\" >> /etc/crontab \"",
+      "sudo ${local.backups_mount}",
+      "sudo ${local.callrecords_mount}",
+//      "sudo sh -c \"echo '${local.backups_mount}' >> /etc/fstab\"",
+//      "sudo sh -c \"echo '${local.callrecords_mount}' >> /etc/fstab\"",
+//      "sudo mount /var/lib/3cxpbx/Instance1/Data/Backups",
+//      "sudo mount /var/lib/3cxpbx/Instance1/Data/Recordings",
     ]
   }
 
