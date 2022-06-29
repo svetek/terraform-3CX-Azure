@@ -184,6 +184,7 @@ output "ssh_public_key" {
 resource "azurerm_key_vault_secret" "save_password_web_vault" {
   name         = "${var.vm_name}-webadmin"
   value        = "${random_password.pbx-web-password.result}"
+  content_type = "https://${data.azurerm_public_ip.pbx-public-ip.ip_address}:5001"
   key_vault_id = azurerm_key_vault.pbx_vault.id
 
   depends_on = [azurerm_role_assignment.role-secret-officer]
