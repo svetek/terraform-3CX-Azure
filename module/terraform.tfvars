@@ -32,3 +32,5 @@ managed_disk_type = "Standard_LRS"
 firewall_allow_voipproviders = ["127.0.0.1"]
 firewall_allow_clientip = ["127.0.0.1"]
 vault_ad_sec_group="Administrators"
+
+email_notification="help@svetek.com"

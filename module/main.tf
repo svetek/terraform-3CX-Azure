@@ -580,7 +580,7 @@ resource "azurerm_monitor_action_group" "ag" {
 
   email_receiver {
     name                    = "support"
-    email_address           = "help@svetek.com"
+    email_address           = "${var.email_notification}"
     use_common_alert_schema = true
   }
 

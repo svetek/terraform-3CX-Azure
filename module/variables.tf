@@ -23,4 +23,5 @@ variable "vault_ad_sec_group" {}
 variable "firewall_allow_voipproviders" {}
 variable "firewall_allow_clientip" {}
 
+variable "email_notification" {}
 
