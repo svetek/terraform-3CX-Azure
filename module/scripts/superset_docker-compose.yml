@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   superset:
-    image: apache/superset:latest
+    image: apache/superset:0b49327cfb69b6596221cf3b8f7b8338d5772f27
     container_name: superset_app
     #    command: ["/app/docker/docker-bootstrap.sh", "app"]
     restart: always
