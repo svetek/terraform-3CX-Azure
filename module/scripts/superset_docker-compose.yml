@@ -1,3 +1,11 @@
+x-superset-volumes: &superset-volumes
+  # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
+  - ./docker:/app/docker
+  - ./superset:/app/superset
+  - ./superset-frontend:/app/superset-frontend
+  - superset_home:/app/superset_home
+  - ./tests:/app/tests
+
 version: "3.7"
 services:
   superset:
@@ -7,13 +15,15 @@ services:
     restart: always
     ports:
       - 8088:8088
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
 #    user: *superset-user
 #    depends_on: *superset-depends-on
 #    volumes: *superset-volumes
 #    environment:
 #      CYPRESS_CONFIG: "${CYPRESS_CONFIG}"
-volumes:
-  superset_home:
-    external: false
-  db_home:
-    external: false
+#volumes:
+#  superset_home:
+#    external: false
+#  db_home:
+#    external: false
