@@ -45,6 +45,13 @@ apt-get -y install docker-ce docker-ce-cli containerd.io
 curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /bin/docker-compose
 chmod +x /bin/docker-compose
 mkdir /opt/superset
+mkdir /opt/superset/conf
+chmod a+rwx /opt/superset/conf
+
+#create user superset with encrypted password 'JHyuIJIYUtftyg887';
+#grant all privileges on database database_single to superset;
+#GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO superset;
+
 cd /opt/superset && wget -c https://raw.githubusercontent.com/svetek/terraform-3CX-Azure/main/module/scripts/superset_docker-compose.yml  >> /tmp/install_log
 mv /opt/superset/superset_docker-compose.yml /opt/superset/docker-compose.yml  >> /tmp/install_log
 docker-compose up -d  >> /tmp/install_log &> /dev/null
