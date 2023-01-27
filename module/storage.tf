@@ -154,7 +154,7 @@ output "your_addr" {
 }
 
 resource "null_resource" "mount_storage" {
-
+  count = var.storage_for_records ? 1 : 0
   connection {
     type     = "ssh"
     user     = var.local_admin_username
