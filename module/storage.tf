@@ -94,9 +94,9 @@ resource "azurerm_storage_container" "nfsv3_backup" {
   container_access_type = "private"
   depends_on = [azurerm_private_endpoint.storage_blob]
 
-  lifecycle {
-    prevent_destroy = true
-  }
+#  lifecycle {
+#    prevent_destroy = true
+#  }
 
 }
 
@@ -107,20 +107,30 @@ resource "azurerm_storage_container" "nfsv3_callrecords" {
   container_access_type = "private"
   depends_on = [azurerm_private_endpoint.storage_blob]
 
-  lifecycle {
-    prevent_destroy = true
-  }
+#  lifecycle {
+#    prevent_destroy = true
+#  }
 }
+
+#locals {
+#  count = var.storage_for_records ? 1 : 0
+#  backups_fstab     = "${split("/", split("//", azurerm_storage_container.nfsv3_backup[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_backup[0].name} /var/lib/3cxpbx/Instance1/Data/Backups auto sec=sys,vers=3,nolock,proto=tcp 0 0"
+#  callrecords_fstab = "${split("/", split("//", azurerm_storage_container.nfsv3_callrecords[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_callrecords[0].name} /var/lib/3cxpbx/Instance1/Data/Recordings auto sec=sys,vers=3,nolock,proto=tcp 0 0"
+#  backups_mount     = "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_backup[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_backup[0].name} /var/lib/3cxpbx/Instance1/Data/Backups"
+#  callrecords_mount = "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_callrecords[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_callrecords[0].name} /var/lib/3cxpbx/Instance1/Data/Recordings"
+#
+#}
+
+
 
 locals {
-  count = var.storage_for_records ? 1 : 0
-  backups_fstab     = "${split("/", split("//", azurerm_storage_container.nfsv3_backup[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_backup[0].name} /var/lib/3cxpbx/Instance1/Data/Backups auto sec=sys,vers=3,nolock,proto=tcp 0 0"
-  callrecords_fstab = "${split("/", split("//", azurerm_storage_container.nfsv3_callrecords[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_callrecords[0].name} /var/lib/3cxpbx/Instance1/Data/Recordings auto sec=sys,vers=3,nolock,proto=tcp 0 0"
-  backups_mount     = "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_backup[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_backup[0].name} /var/lib/3cxpbx/Instance1/Data/Backups"
-  callrecords_mount = "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_callrecords[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_callrecords[0].name} /var/lib/3cxpbx/Instance1/Data/Recordings"
-
-
+  backups_fstab     = var.storage_for_records ? "${split("/", split("//", azurerm_storage_container.nfsv3_backup[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_backup[0].name} /var/lib/3cxpbx/Instance1/Data/Backups auto sec=sys,vers=3,nolock,proto=tcp 0 0" : ""
+  callrecords_fstab = var.storage_for_records ? "${split("/", split("//", azurerm_storage_container.nfsv3_callrecords[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_callrecords[0].name} /var/lib/3cxpbx/Instance1/Data/Recordings auto sec=sys,vers=3,nolock,proto=tcp 0 0" : ""
+  backups_mount     = var.storage_for_records ? "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_backup[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_backup[0].name} /var/lib/3cxpbx/Instance1/Data/Backups" : ""
+  callrecords_mount = var.storage_for_records ? "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_callrecords[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_callrecords[0].name} /var/lib/3cxpbx/Instance1/Data/Recordings" : ""
 }
+
+
 
 
 output "backups_fstab" {
