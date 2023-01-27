@@ -18,6 +18,11 @@ data "http" "ipinfo" {
   method = "GET"
 }
 
+#data "dns_a_record_set" "whoami" {
+#  host = "resolver1.opendns.com"
+#}
+
+
 
 resource "random_string" "random" {
   length  = 10
@@ -26,6 +31,7 @@ resource "random_string" "random" {
 }
 
 resource "azurerm_storage_account" "storage" {
+  count = var.storage_for_records ? 1 : 0
   name                     = random_string.random.id
   resource_group_name      = azurerm_resource_group.RG-3CX-GROUP.name
   location                 = azurerm_resource_group.RG-3CX-GROUP.location
@@ -61,6 +67,7 @@ resource "azurerm_storage_account" "storage" {
 }
 
 resource "azurerm_private_endpoint" "storage_blob" {
+  count = var.storage_for_records ? 1 : 0
   name                = "storagenfs-${var.vm_name}"
   location            = azurerm_resource_group.RG-3CX-GROUP.location
   resource_group_name = azurerm_resource_group.RG-3CX-GROUP.name
@@ -69,7 +76,7 @@ resource "azurerm_private_endpoint" "storage_blob" {
   private_service_connection {
     name                           = "stornfs-${var.vm_name}-connection"
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_storage_account.storage.id
+    private_connection_resource_id = azurerm_storage_account.storage[0].id
     subresource_names              = ["blob"]
   }
 
@@ -81,8 +88,9 @@ resource "azurerm_private_endpoint" "storage_blob" {
 }
 
 resource "azurerm_storage_container" "nfsv3_backup" {
+  count = var.storage_for_records ? 1 : 0
   name                  = "backup"
-  storage_account_name  = azurerm_storage_account.storage.name
+  storage_account_name  = azurerm_storage_account.storage[0].name
   container_access_type = "private"
   depends_on = [azurerm_private_endpoint.storage_blob]
 
@@ -93,8 +101,9 @@ resource "azurerm_storage_container" "nfsv3_backup" {
 }
 
 resource "azurerm_storage_container" "nfsv3_callrecords" {
+  count = var.storage_for_records ? 1 : 0
   name                  = "callrecords"
-  storage_account_name  = azurerm_storage_account.storage.name
+  storage_account_name  = azurerm_storage_account.storage[0].name
   container_access_type = "private"
   depends_on = [azurerm_private_endpoint.storage_blob]
 
@@ -104,10 +113,11 @@ resource "azurerm_storage_container" "nfsv3_callrecords" {
 }
 
 locals {
-  backups_fstab     = "${split("/", split("//", azurerm_storage_container.nfsv3_backup.id)[1])[0]}:/${azurerm_storage_account.storage.name}/${azurerm_storage_container.nfsv3_backup.name} /var/lib/3cxpbx/Instance1/Data/Backups auto sec=sys,vers=3,nolock,proto=tcp 0 0"
-  callrecords_fstab = "${split("/", split("//", azurerm_storage_container.nfsv3_callrecords.id)[1])[0]}:/${azurerm_storage_account.storage.name}/${azurerm_storage_container.nfsv3_callrecords.name} /var/lib/3cxpbx/Instance1/Data/Recordings auto sec=sys,vers=3,nolock,proto=tcp 0 0"
-  backups_mount     = "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_backup.id)[1])[0]}:/${azurerm_storage_account.storage.name}/${azurerm_storage_container.nfsv3_backup.name} /var/lib/3cxpbx/Instance1/Data/Backups"
-  callrecords_mount = "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_callrecords.id)[1])[0]}:/${azurerm_storage_account.storage.name}/${azurerm_storage_container.nfsv3_callrecords.name} /var/lib/3cxpbx/Instance1/Data/Recordings"
+  count = var.storage_for_records ? 1 : 0
+  backups_fstab     = "${split("/", split("//", azurerm_storage_container.nfsv3_backup[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_backup[0].name} /var/lib/3cxpbx/Instance1/Data/Backups auto sec=sys,vers=3,nolock,proto=tcp 0 0"
+  callrecords_fstab = "${split("/", split("//", azurerm_storage_container.nfsv3_callrecords[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_callrecords[0].name} /var/lib/3cxpbx/Instance1/Data/Recordings auto sec=sys,vers=3,nolock,proto=tcp 0 0"
+  backups_mount     = "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_backup[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_backup[0].name} /var/lib/3cxpbx/Instance1/Data/Backups"
+  callrecords_mount = "mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp ${split("/", split("//", azurerm_storage_container.nfsv3_callrecords[0].id)[1])[0]}:/${azurerm_storage_account.storage[0].name}/${azurerm_storage_container.nfsv3_callrecords[0].name} /var/lib/3cxpbx/Instance1/Data/Recordings"
 
 
 }
@@ -127,6 +137,10 @@ output "backups_mount" {
 
 output "callrecords_mount" {
   value = local.callrecords_mount
+}
+
+output "your_addr" {
+  value = "${jsondecode(data.http.ipinfo.response_body).ip}"
 }
 
 resource "null_resource" "mount_storage" {
