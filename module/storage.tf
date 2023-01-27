@@ -7,10 +7,17 @@
 
 
 
-module myip {
-  source  = "4ops/myip/http"
-  version = "1.0.0"
+#module myip {
+#  source  = "4ops/myip/http"
+#  version = "1.0.0"
+#}
+
+
+data "http" "ipinfo" {
+  url = "https://ipinfo.io"
+  method = "GET"
 }
+
 
 resource "random_string" "random" {
   length  = 10
@@ -32,7 +39,8 @@ resource "azurerm_storage_account" "storage" {
   network_rules {
     default_action             = "Deny"
     bypass                     = ["Metrics", "AzureServices", "Logging"]
-    ip_rules                   = [ module.myip.address ]
+#    ip_rules                   = [ module.myip.address ]
+    ip_rules                   = [ jsondecode(data.http.ipinfo.response_body).ip ]
     virtual_network_subnet_ids = [azurerm_subnet.pbx-virtual-subnet.id]
     private_link_access {
       endpoint_resource_id = azurerm_subnet.pbx-virtual-subnet.id

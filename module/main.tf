@@ -105,18 +105,18 @@ resource "random_password" "pbx-superset-password" {
 #  sensitive = true
 #}
 
-resource "azurerm_key_vault_secret" "save_password_vault" {
-  name         = "${var.vm_name}-${var.local_admin_username}"
-  value        = "${random_password.pbx-ssh-password.result}"
-  key_vault_id = azurerm_key_vault.pbx_vault.id
-
-  depends_on = [azurerm_role_assignment.role-secret-officer]
-
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes = [ value ]
-  }
-}
+#resource "azurerm_key_vault_secret" "save_password_vault" {
+#  name         = "${var.vm_name}-${var.local_admin_username}"
+#  value        = "${random_password.pbx-ssh-password.result}"
+#  key_vault_id = azurerm_key_vault.pbx_vault.id
+#
+#  depends_on = [azurerm_role_assignment.role-secret-officer]
+#
+#  lifecycle {
+#    prevent_destroy = true
+#    ignore_changes = [ value ]
+#  }
+#}
 
 
 # No metods for export private keys
@@ -143,71 +143,71 @@ resource "tls_private_key" "rsa_vm_ssh" {
   rsa_bits  = 4096
 }
 
-resource "azurerm_key_vault_secret" "rsa_vm_ssh_private" {
-  name         = "${var.vm_name}-ssh-private"
-  value        = base64encode(tls_private_key.rsa_vm_ssh.private_key_pem)
-  key_vault_id = azurerm_key_vault.pbx_vault.id
-  content_type = "Need Base64 Decoded"
-  depends_on = [azurerm_role_assignment.role-secret-officer]
-
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes = [ value ]
-  }
-
-}
+#resource "azurerm_key_vault_secret" "rsa_vm_ssh_private" {
+#  name         = "${var.vm_name}-ssh-private"
+#  value        = base64encode(tls_private_key.rsa_vm_ssh.private_key_pem)
+#  key_vault_id = azurerm_key_vault.pbx_vault.id
+#  content_type = "Need Base64 Decoded"
+#  depends_on = [azurerm_role_assignment.role-secret-officer]
+#
+#  lifecycle {
+#    prevent_destroy = true
+#    ignore_changes = [ value ]
+#  }
+#
+#}
 
 output "vm_private_key" {
   value = tls_private_key.rsa_vm_ssh.private_key_pem
 }
 
-resource "azurerm_key_vault_secret" "rsa_vm_ssh_public" {
-  name         = "${var.vm_name}-ssh-public"
-  value        = base64encode(tls_private_key.rsa_vm_ssh.public_key_openssh)
-  key_vault_id = azurerm_key_vault.pbx_vault.id
-  content_type = "Need Base64 Decoded"
+#resource "azurerm_key_vault_secret" "rsa_vm_ssh_public" {
+#  name         = "${var.vm_name}-ssh-public"
+#  value        = base64encode(tls_private_key.rsa_vm_ssh.public_key_openssh)
+#  key_vault_id = azurerm_key_vault.pbx_vault.id
+#  content_type = "Need Base64 Decoded"
+#
+#  depends_on = [azurerm_role_assignment.role-secret-officer]
+#
+#  lifecycle {
+#    prevent_destroy = true
+#    ignore_changes = [ value ]
+#  }
+#
+#
+#}
 
-  depends_on = [azurerm_role_assignment.role-secret-officer]
+#output "ssh_public_key" {
+#  value = azurerm_key_vault_secret.rsa_vm_ssh_private
+#}
 
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes = [ value ]
-  }
-
-
-}
-
-output "ssh_public_key" {
-  value = azurerm_key_vault_secret.rsa_vm_ssh_private
-}
-
-resource "azurerm_key_vault_secret" "save_password_web_vault" {
-  name         = "${var.vm_name}-webadmin"
-  value        = "${random_password.pbx-web-password.result}"
-  content_type = "https://${data.azurerm_public_ip.pbx-public-ip.ip_address}:5001"
-  key_vault_id = azurerm_key_vault.pbx_vault.id
-
-  depends_on = [azurerm_role_assignment.role-secret-officer]
-
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes = [ value ]
-  }
-
-}
-
-resource "azurerm_key_vault_secret" "save_password_superset_vault" {
-  name         = "${var.vm_name}-superset-admin"
-  value        = "${random_password.pbx-superset-password.result}"
-  key_vault_id = azurerm_key_vault.pbx_vault.id
-
-  depends_on = [azurerm_role_assignment.role-secret-officer]
-
-  lifecycle {
-    prevent_destroy = true
-    ignore_changes = [ value ]
-  }
-}
+#resource "azurerm_key_vault_secret" "save_password_web_vault" {
+#  name         = "${var.vm_name}-webadmin"
+#  value        = "${random_password.pbx-web-password.result}"
+#  content_type = "https://${data.azurerm_public_ip.pbx-public-ip.ip_address}:5001"
+#  key_vault_id = azurerm_key_vault.pbx_vault.id
+#
+#  depends_on = [azurerm_role_assignment.role-secret-officer]
+#
+#  lifecycle {
+#    prevent_destroy = true
+#    ignore_changes = [ value ]
+#  }
+#
+#}
+#
+#resource "azurerm_key_vault_secret" "save_password_superset_vault" {
+#  name         = "${var.vm_name}-superset-admin"
+#  value        = "${random_password.pbx-superset-password.result}"
+#  key_vault_id = azurerm_key_vault.pbx_vault.id
+#
+#  depends_on = [azurerm_role_assignment.role-secret-officer]
+#
+#  lifecycle {
+#    prevent_destroy = true
+#    ignore_changes = [ value ]
+#  }
+#}
 
 # Create a resource group
 resource "azurerm_resource_group" "RG-3CX-GROUP" {
@@ -242,7 +242,8 @@ resource "azurerm_subnet" "pbx-virtual-subnet" {
   virtual_network_name = azurerm_virtual_network.pbx-virtual-network.name
   address_prefixes       = ["10.0.0.0/29"]
   service_endpoints    = ["Microsoft.Storage"]
-  enforce_private_link_endpoint_network_policies = true
+#  enforce_private_link_endpoint_network_policies = true
+  private_endpoint_network_policies_enabled=true
 }
 
 
