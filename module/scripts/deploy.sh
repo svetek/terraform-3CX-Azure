@@ -35,7 +35,8 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D34B9BFD90503A6B
 echo "deb http://downloads-global.3cx.com/downloads/debian buster main" | tee /etc/apt/sources.list.d/3cxpbx.list
 apt update
 apt install -y net-tools dphys-swapfile
-DEBIAN_FRONTEND=noninteractive apt -q -y --force-yes install 3cxpbx
+#DEBIAN_FRONTEND=noninteractive apt -q -y --force-yes install 3cxpbx
+apt-get install -qq -y --no-install-recommends 3cxpbx
 
 # Install superset
 curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
